@@ -1,1 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#0a0a0b"/><polygon points="150,172 204,172 256,318 308,172 362,172 284,380 228,380" fill="#f4f4f5"/><polygon points="256,104 278,126 256,148 234,126" fill="#d8b56d"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1d1d22"/>
+      <stop offset="1" stop-color="#070708"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="58%" r="46%">
+      <stop offset="0" stop-color="#d8b56d" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#d8b56d" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#f6e4b4"/>
+      <stop offset=".55" stop-color="#d8b56d"/>
+      <stop offset="1" stop-color="#a87c35"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <rect width="512" height="512" fill="url(#glow)"/>
+  <!-- V: rechter Balken etwas dunkler, wie gemeißelt -->
+  <polygon points="146,176 206,176 256,322 256,388 230,388" fill="url(#gold)"/>
+  <polygon points="366,176 306,176 256,322 256,388 282,388" fill="url(#gold)" opacity=".8"/>
+  <polygon points="256,104 280,128 256,152 232,128" fill="#f6e4b4"/>
+</svg>
