@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#0a0a0b">
+<meta name="theme-color" content="#111215">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#0a0a0b;--s1:#131315;--s2:#1a1a1d;--s3:#232327;--line:rgba(255,255,255,.07);--line2:rgba(255,255,255,.12);
@@ -293,6 +293,78 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
 .stick.p-box .arms{animation:jab 1.5s ease-in-out infinite}.stick .zz{animation:tw 2.4s ease-in-out infinite}
 .stick.m-sleep .fig,.stick.m-tired .fig{animation-duration:5.5s}.stick.m-sleep{opacity:.7}
 @keyframes press{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}@keyframes runb{50%{transform:translateY(-3.5px)}}@keyframes jab{0%,60%,100%{transform:translateX(0)}75%{transform:translateX(-4px)}}
+/* ---------- VIGIL 3: gleiche Formensprache wie Sonnenklar und Lernklar ----------
+   Dunkel und Champagner-Gold bleiben VIGIL. Neu: Bricolage Grotesque, weiche runde Karten,
+   Pillen-Knöpfe, Gold als Hauptfarbe für Aktionen, schwebendes Menü unten. */
+:root{
+  --bg:#111215;--s1:#1a1b1f;--s2:#24262b;--s3:#2e3036;--line:rgba(255,255,255,.075);--line2:rgba(255,255,255,.12);
+  --text:#efede8;--muted:#a3a5ad;--dim:#6f7179;
+  --acc-s:rgba(216,181,109,.14);--acc-deep:#e9cf97;
+  --r:22px;--r2:999px;--font:'Bricolage Grotesque',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1);--spring:cubic-bezier(.34,1.56,.64,1);
+  --shadow:0 1px 0 rgba(255,255,255,.03),0 18px 40px -20px rgba(0,0,0,.7);
+  --nav:calc(78px + env(safe-area-inset-bottom));
+}
+html,body{background:var(--bg)}
+main{max-width:600px;padding:12px 16px 0}
+
+/* Überschriften: ruhig, ohne Großbuchstaben-Kicker */
+.kicker,.eyebrow{font-size:13.5px;font-weight:650;letter-spacing:0;text-transform:none;color:var(--muted)}
+.ph h1,.page-title{font-size:clamp(30px,8vw,38px);font-weight:800;letter-spacing:-.035em}
+main h2{font-size:20px;font-weight:750;letter-spacing:-.02em;text-transform:none;color:var(--text);margin:28px 4px 12px}
+.brand{font-weight:800;letter-spacing:.3em}
+
+/* Flächen */
+.card,.list,.kpi,.entry,.pr-row{border-radius:var(--r);box-shadow:var(--shadow);background:var(--s1)}
+.card{padding:18px}
+.today{background:var(--acc-s);border:1px solid rgba(216,181,109,.24);border-radius:28px;box-shadow:none}
+.today h2{font-size:32px;font-weight:800;letter-spacing:-.035em}
+.today p,.today-meta{color:#c9c6bd}
+.tile,.set,.rec,.mrow,.plist,.ti{border-radius:18px}
+.li{min-height:62px}
+.day,.ex-n{border-radius:999px}
+.li.today .day{background:var(--acc);color:#1a1408}
+
+/* Knöpfe: Pillen, Hauptaktion in Gold */
+.btn{border-radius:999px;font-weight:750;transition:transform .18s var(--ease),filter .2s,background .2s}
+.btn:active{transform:translateY(1px) scale(.98)}
+.btn.primary,.btn.acc{background:var(--acc);color:#1a1408;border-color:transparent;box-shadow:0 10px 24px -12px var(--acc)}
+.btn.primary:active{background:var(--acc);filter:brightness(.95)}
+.btn.xl{border-radius:999px;min-height:56px}
+.icon-btn{border-radius:999px;background:var(--s1);border:1px solid var(--line);color:var(--text)}
+.check{border-radius:999px;background:var(--acc);color:#1a1408}
+.inp{border-radius:14px}
+.stepper{border-radius:16px}
+.rpe-btn,.rpe-grid button,.feelrow button{border-radius:999px}
+.rpe-grid button.on{background:var(--acc);color:#1a1408}.rpe-grid button.on small{color:#4a3d22}
+.chips button.on{background:var(--acc);color:#1a1408}
+.seg{border-radius:999px;background:rgba(26,27,31,.86)}
+.seg button{border-radius:999px}
+.seg button.on{background:var(--acc);color:#1a1408}
+.wk i{transition:transform .35s var(--spring)}
+.wk .on i{transform:scale(1.05)}
+
+/* Sheets und Dialoge */
+.sheet{background:var(--s1);border-radius:28px 28px 0 0}
+.dlg{background:var(--s1);border-radius:24px}
+.toast{border-radius:999px;background:rgba(239,237,232,.96);color:#16181c;border:0}
+.toast b{color:#8a6a2c}
+
+/* Pausen-Timer als Pille über dem Menü */
+.timerbar{bottom:calc(var(--nav) + 6px)}
+.t-in{border-radius:999px;background:rgba(26,27,31,.92);box-shadow:var(--shadow)}
+.t-in>button,.t-mid{border-radius:999px}
+
+/* Schwebendes Menü wie bei Sonnenklar */
+.nav{left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));padding:6px;border:1px solid var(--line2);border-radius:999px;
+  background:color-mix(in srgb,var(--s1) 86%,transparent);box-shadow:0 18px 40px -16px rgba(0,0,0,.8)}
+.nav-in{max-width:none;height:auto;gap:4px}
+.nav button{min-height:52px;padding:6px 2px;border-radius:999px;color:var(--muted);font-size:11px;font-weight:650;transition:background .3s var(--ease),color .3s var(--ease),transform .2s var(--ease)}
+.nav button:active{transform:scale(.95)}
+.nav button.on{background:var(--acc);color:#1a1408;box-shadow:0 8px 20px -10px var(--acc)}
+.nav .dot{top:7px;background:var(--good);box-shadow:0 0 0 2px var(--s1)}
+@media (min-width:640px){.nav{left:50%;right:auto;width:560px;transform:translateX(-50%)}}
+
 /* ---------- App-Gefühl: kein Zoomen, kein Nachfedern, keine Scrollbalken ---------- */
 html { height: 100%; overflow: hidden; overscroll-behavior: none; }
 html, body { touch-action: manipulation; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
@@ -720,7 +792,7 @@ function stickSVG(o,size=100,cls=''){
   if(size>=60){const e=(x,y)=>mood==='happy'?`M${x-2.2} ${y+.6}Q${x} ${y-2.6} ${x+2.2} ${y+.6}`:mood==='ready'?`M${x} ${y-.4}v.8`:mood==='tired'?`M${x-2.2} ${y}h4.4`:`M${x-2.2} ${y-.6}Q${x} ${y+2} ${x+2.2} ${y-.6}`;
     const mo=mood==='happy'?`M${hx-3.6} ${hy+3.6}Q${hx} ${hy+7.6} ${hx+3.6} ${hy+3.6}`:mood==='ready'?`M${hx-2.6} ${hy+5}Q${hx} ${hy+6.4} ${hx+2.6} ${hy+5}`:mood==='tired'?`M${hx-2.8} ${hy+6}Q${hx} ${hy+4.2} ${hx+2.8} ${hy+6}`:`M${hx-1.4} ${hy+5.4}h2.8`;
     hd+=L(e(hx-4,hy-1.5)+e(hx+4,hy-1.5),mood==='ready'?2.6:1.7)+L(mo,1.7);
-    if(mood==='sleep') hd+=`<text class="zz" x="${hx+15}" y="${hy-9}" font-size="12" font-weight="700" fill="currentColor" opacity=".55" font-family="Inter,sans-serif">z<tspan dx="1" dy="-6" font-size="9">z</tspan></text>`;
+    if(mood==='sleep') hd+=`<text class="zz" x="${hx+15}" y="${hy-9}" font-size="12" font-weight="700" fill="currentColor" opacity=".55" font-family="Bricolage Grotesque,sans-serif">z<tspan dx="1" dy="-6" font-size="9">z</tspan></text>`;
     if(mood==='tired') hd+=`<path d="M${hx+13} ${hy-6}q-3 5 0 7q3 -2 0 -7z" fill="#7aa2ff" opacity=".8"/>`;}
   if(stage>=4) hd+=L(`M${hx-10.6} ${hy-4}Q${hx} ${hy-9} ${hx+10.6} ${hy-4}`,3.2,A)+L(`M${hx+10.4} ${hy-4.4}l7.5 2.6M${hx+10.2} ${hy-3.4}l5.6 7`,2,A);
   if(streak>=2) fx+=`<ellipse cx="60" cy="151" rx="${r(34+Math.min(streak,10))}" ry="6" fill="none" stroke="${A}" stroke-width="1.4" opacity="${r(Math.min(.9,.3+streak*.08))}"/>`;
@@ -873,7 +945,7 @@ function drawChart(cv,cfg){
   const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,W,H);
   const Pd={l:46,r:12,t:14,b:26}, pw=W-Pd.l-Pd.r, ph=H-Pd.t-Pd.b;
   const pts=[];(cfg.series||[]).forEach(s=>s.points.forEach(p=>pts.push(p)));(cfg.bars?.points||[]).forEach(p=>pts.push(p));
-  g.font='500 11.5px Inter, system-ui, sans-serif';
+  g.font='600 11.5px "Bricolage Grotesque", system-ui, sans-serif';
   if(!pts.length){g.fillStyle=C.txt;g.textAlign='center';g.textBaseline='middle';g.fillText(cfg.empty||'Noch keine Daten',W/2,H/2);return;}
   let x0=Math.min(...pts.map(p=>p.x)),x1=Math.max(...pts.map(p=>p.x));
   if(x0===x1){x0-=3*864e5;x1+=3*864e5;} const px=(x1-x0)*.05; x0-=px; x1+=px;
