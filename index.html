@@ -1700,6 +1700,11 @@ render();
 try{navigator.storage?.persist?.();}catch{}
 if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname))){
   addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(err=>console.warn('SW-Registrierung fehlgeschlagen',err)));
+  // Updates: beim Zurückholen aus dem Hintergrund nachsehen; übernimmt eine neue Version, einmal neu laden
+  // (iOS lässt installierte Apps lange offen, sonst bliebe die alte Version stehen). Nie mitten im Training.
+  const hadSW=!!navigator.serviceWorker.controller; let reloaded=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!hadSW||reloaded)return;reloaded=true;if(S.active){toast('Update bereit – wird nach dem Training geladen.');return;}location.reload();});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)navigator.serviceWorker.getRegistration().then(r=>r&&r.update()).catch(()=>{});});
 }
 </script>
 <script>

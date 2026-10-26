@@ -1,6 +1,6 @@
 /* VIGIL Service Worker – macht die App offline-fähig.
    Version erhöhen, wenn index.html geändert wurde, damit Handys das Update laden. */
-const CACHE = 'vigil-v18';
+const CACHE = 'vigil-v19';
 const FONTS = 'vigil-fonts';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png'];
 
@@ -21,7 +21,26 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
 
-  // App-Dateien: sofort aus dem Cache (schnell im Gym), im Hintergrund aktualisieren.
+  // Die Seite selbst: erst frisch vom Netz (an der Browser-Zwischenablage vorbei), damit Updates
+  // sofort ankommen. Ohne Netz oder nach 3 Sekunden (schlechter Empfang im Gym) aus dem Cache.
+  if (url.origin === location.origin && req.mode === 'navigate') {
+    e.respondWith(caches.open(CACHE).then(async cache => {
+      const network = fetch(req, { cache: 'no-cache' }).then(res => {
+        if (res && res.ok) cache.put('./index.html', res.clone());
+        return res;
+      });
+      const timeout = new Promise(r => setTimeout(r, 3000));
+      try {
+        const res = await Promise.race([network, timeout]);
+        if (res) return res;
+      } catch (err) {}
+      e.waitUntil(network.catch(() => {}));
+      return (await cache.match('./index.html')) || network;
+    }));
+    return;
+  }
+
+  // Übrige App-Dateien: sofort aus dem Cache, im Hintergrund aktualisieren.
   if (url.origin === location.origin) {
     const key = req.mode === 'navigate' ? './index.html' : req;
     e.respondWith(caches.open(CACHE).then(async cache => {
