@@ -422,6 +422,7 @@ img, svg { -webkit-user-drag: none; }
 .mbar i{height:10px;border-radius:99px;background:var(--s3);overflow:hidden}.mbar u{display:block;height:100%;border-radius:99px;background:var(--acc)}.mbar b{text-align:right}
 .mus-chips{flex-wrap:wrap;overflow:visible}.mus-chips button{height:34px;padding:0 12px;font-size:13px}
 .prow .pn{display:flex;flex-direction:column;min-width:0}.prow .pn small{font-size:12px;color:var(--muted)}
+.steppers.one{grid-template-columns:1fr}
 </style>
 </head>
 <body>
@@ -521,17 +522,18 @@ function defaultExercises(){
     L('legcurl','Beinbeugen sitzend (Maschine)',{step:5}),L('calfseat','Wadenheben sitzend'),
     L('inclinepress','Schräge Brustpresse (Maschine)',{step:5}),L('flyes','Fliegende (Maschine)',{step:5}),L('frontraise','Frontheben (Kurzhantel)',{step:2}),
     L('ohpm','Schulterdrücken (Maschine)',{step:5}),L('pushdown','Trizeps-Pushdown (Kabelzug)'),L('chestpress','Brustpresse (Maschine)',{step:5}),L('lateralraise','Seitheben sitzend (Kurzhantel)',{step:2}),
+    L('crunchc','Crunch (Kabelzug)'),L('russian','Russian Twist (mit Gewicht)',{step:2}),L('cardio','Cardio (Laufband / Rad / Crosstrainer)',{metric:'min',load:'bw'}),
   ];
 }
 function defaultTemplates(){
   const I=(exId,sets,repMin,repMax,rest)=>({exId,sets,repMin,repMax,rest});
   return [
-    {id:'tPushA',name:'Push A · Brust & Schultern',day:1,kind:'strength',items:[I('inclinepress',3,8,12,120),I('flyes',3,10,15,90),I('frontraise',3,10,15,75),I('ohpm',3,8,12,120),I('pushdown',4,10,15,75)]},
-    {id:'tPullA',name:'Pull A · Rücken & Bizeps',day:2,kind:'strength',items:[I('latpull',3,8,12,120),I('curlkh',4,8,12,90),I('hammer',3,10,12,75),I('isorow',3,8,12,120),I('cablerow',3,10,12,90)]},
-    {id:'tLegA',name:'Beine A',day:3,kind:'strength',items:[I('legpress',3,8,12,150),I('abd',3,12,15,75),I('add',3,12,15,75),I('legext',3,10,15,90),I('legcurl',3,10,15,90),I('calfseat',3,12,15,60)]},
-    {id:'tPushB',name:'Push B · Brust & Schultern',day:4,kind:'strength',items:[I('inclinepress',3,8,12,120),I('chestpress',3,8,12,120),I('frontraise',3,10,15,75),I('lateralraise',3,12,15,75),I('pushdown',4,10,15,75)]},
-    {id:'tPullB',name:'Pull B · Rücken & Bizeps',day:5,kind:'strength',items:[I('latpull',3,8,12,120),I('preacher',3,10,12,90),I('isorow',3,8,12,120),I('hammer',4,10,12,75),I('cablerowwide',3,10,12,90)]},
-    {id:'tLegB',name:'Beine B',day:6,kind:'strength',items:[I('legcurl',3,10,15,90),I('legpress',3,8,12,150),I('legext',3,10,15,90),I('add',3,12,15,75),I('abd',3,12,15,75),I('calfseat',4,12,15,60)]},
+    {id:'tPullA',name:'Pull A · Rücken & Bizeps',day:1,kind:'strength',items:[I('latpull',3,8,12,120),I('curlkh',4,8,12,90),I('hammer',3,10,12,75),I('isorow',3,8,12,120),I('cablerow',3,10,12,90)]},
+    {id:'tPushA',name:'Push A · Brust & Schultern',day:2,kind:'strength',items:[I('inclinepress',3,8,12,120),I('flyes',3,10,15,90),I('frontraise',3,10,15,75),I('ohpm',3,8,12,120),I('pushdown',4,10,15,75)]},
+    {id:'tLegA',name:'Beine',day:3,kind:'strength',items:[I('legpress',3,8,12,150),I('abd',3,12,15,75),I('add',3,12,15,75),I('legext',3,10,15,90),I('legcurl',3,10,15,90),I('calfseat',3,12,15,60)]},
+    {id:'tPullB',name:'Pull B · Rücken & Bizeps',day:4,kind:'strength',items:[I('latpull',3,8,12,120),I('preacher',3,10,12,90),I('isorow',3,8,12,120),I('hammer',4,10,12,75),I('cablerowwide',3,10,12,90)]},
+    {id:'tPushB',name:'Push B · Brust & Schultern',day:5,kind:'strength',items:[I('inclinepress',3,8,12,120),I('chestpress',3,8,12,120),I('frontraise',3,10,15,75),I('lateralraise',3,12,15,75),I('pushdown',4,10,15,75)]},
+    {id:'tCore',name:'Core + Cardio',day:6,kind:'strength',items:[I('crunchc',3,12,15,60),I('kneeraise',3,10,15,60),I('russian',3,16,24,60),I('plank',3,30,60,60),I('cardio',1,20,30,0)]},
     {id:'tBox',name:'Boxen',day:null,kind:'boxing',items:[]},
     {id:'tRun',name:'Laufen',day:null,kind:'run',items:[]},
   ];
@@ -539,7 +541,7 @@ function defaultTemplates(){
 function defaultState(){
   return {version:VERSION,created:Date.now(),
     profile:{name:'',startWeight:100,goalWeight:85,campaignStart:dayKey(mondayOf(new Date())),restSec:120,autoTimer:true,bigStep5:false,vibrate:true,sound:true,wakeLock:true,weeklyTarget:6,sex:'m',birthYear:'',height:''},
-    exercises:defaultExercises(),templates:defaultTemplates(),sessions:[],bodyweight:[],active:null,planV:2};
+    exercises:defaultExercises(),templates:defaultTemplates(),sessions:[],bodyweight:[],active:null,planV:3};
 }
 function migrate(d){
   const def=defaultState();
@@ -555,6 +557,10 @@ function migrate(d){
     o.templates=o.templates.filter(t=>t.id!=='tA'&&t.id!=='tB');
     for(const t of defaultTemplates()){const i=o.templates.findIndex(x=>x.id===t.id);if(i<0)o.templates.push(t);else if(t.day==null)o.templates[i].day=null;}
     o.profile.weeklyTarget=6; o.planV=2;}
+  if(!(d.planV>=3)){ // Pull · Push · Beine · Pull · Push · Core+Cardio, Sonntag frei
+    o.templates=o.templates.filter(t=>t.id!=='tLegB');
+    for(const t of defaultTemplates()){const x=o.templates.find(y=>y.id===t.id);if(!x)o.templates.push(t);else{x.day=t.day;if(t.id==='tLegA'&&x.name==='Beine A')x.name='Beine';}}
+    o.profile.weeklyTarget=6; o.planV=3;}
   delete o.app; delete o.exportedAt; o.version=VERSION;
   return o;
 }
@@ -588,14 +594,14 @@ function persistUI(){try{localStorage.setItem(UIKEY,JSON.stringify({tab:ui.tab,s
 
 /* ---------- domain helpers ---------- */
 const exById=id=>S.exercises.find(x=>x.id===id)||{id,name:'Unbekannte Übung',metric:'reps',load:'weight',step:2.5};
-const metricUnit=ex=>ex.metric==='m'?'m':ex.metric==='s'?'Sek':'Wdh';
-const metricName=ex=>(ex.metric==='m'?'Meter':ex.metric==='s'?'Sekunden':'Wiederholungen')+(ex.load==='bw'?' · Körpergewicht':'');
+const metricUnit=ex=>ex.metric==='m'?'m':ex.metric==='s'?'Sek':ex.metric==='min'?'Min':'Wdh';
+const metricName=ex=>(ex.metric==='m'?'Meter':ex.metric==='s'?'Sekunden':ex.metric==='min'?'Minuten':'Wiederholungen')+(ex.load==='bw'?' · Körpergewicht':'');
 const wLabel=(w,ex)=>w>0?`${fmtKg(w)} kg`:w<0?`${fmtKg(-w)} kg Hilfe`:(ex.load==='bw'?'KG':'0 kg');
 const stepFor=ex=>(ex.big&&S.profile.bigStep5)?5:(num(ex.step)||2.5);
 const roundTo=(v,st)=>Math.round(v/st)*st;
 function repRange(t){if(t.repMin==null&&t.repMax==null)return 'max';if(t.repMin==null||t.repMin===t.repMax)return String(t.repMax??t.repMin);if(t.repMax==null)return t.repMin+'+';return `${t.repMin}–${t.repMax}`;}
 const targetStr=(t,ex)=>`${t.sets||'?'}×${repRange(t)} ${metricUnit(ex)}`;
-function defaultTarget(ex){return ex.metric==='s'?{sets:3,repMin:30,repMax:45,rest:60}:ex.metric==='m'?{sets:3,repMin:30,repMax:30,rest:90}:{sets:3,repMin:8,repMax:12,rest:num(S.profile.restSec)||120};}
+function defaultTarget(ex){return ex.metric==='min'?{sets:1,repMin:20,repMax:30,rest:0}:ex.metric==='s'?{sets:3,repMin:30,repMax:45,rest:60}:ex.metric==='m'?{sets:3,repMin:30,repMax:30,rest:90}:{sets:3,repMin:8,repMax:12,rest:num(S.profile.restSec)||120};}
 function sortedSessions(){return sortedCache||(sortedCache=[...S.sessions].sort((a,b)=>a.start-b.start));}
 function exHistory(exId,excludeId){
   const out=[];
@@ -925,7 +931,7 @@ setInterval(()=>{
 /* ---------- workout logic ---------- */
 function makeEntry(exId,target,excludeId){
   const ex=exById(exId), rec=recommend(exId,target,excludeId), n=Math.max(1,num(target.sets)||3), sets=[];
-  const defR=target.repMin??target.repMax??(ex.metric==='s'?30:ex.metric==='m'?30:8);
+  const defR=target.repMin??target.repMax??(ex.metric==='s'?30:ex.metric==='m'?30:ex.metric==='min'?20:8);
   for(let i=0;i<n;i++){
     const w=rec.w??(ex.load==='bw'?0:20);
     let r=rec.reps?(rec.reps[i]??rec.reps[rec.reps.length-1]):defR;
@@ -968,7 +974,7 @@ function checkSet(eid,j){
 function stepSet(el,dir){
   const e=getEntry(el.dataset.e); if(!e) return;
   const j=+el.dataset.s, f=el.dataset.f, ex=exById(e.exId), s=e.sets[j];
-  const st=f==='w'?(num(ex.step)||2.5):(ex.metric==='reps'?1:5);
+  const st=f==='w'?(num(ex.step)||2.5):(ex.metric==='reps'||ex.metric==='min'?1:5);
   const min=f==='w'?(ex.load==='bw'?-200:0):0;
   const old=num(s[f]); let v=Math.round((old+dir*st)*100)/100; if(v<min) v=min;
   s[f]=v; setInput(e.id,j,f,v);
@@ -1119,7 +1125,7 @@ const MUS_NAME=Object.fromEntries(MUSCLES);
 const MUS_DEF={squat:'quads|gesaess unterer',bench:'brust|trizeps schultern',row:'oberer|lat bizeps',rdl:'beinbeuger gesaess|unterer',farmer:'unterarme|oberer bauch',plank:'bauch|',
   deadlift:'unterer gesaess|beinbeuger oberer unterarme',ohp:'schultern|trizeps',pullup:'lat|bizeps oberer',lunge:'quads|gesaess',kneeraise:'bauch|',kbswing:'gesaess|beinbeuger unterer',
   latpull:'lat|bizeps oberer unterarme',curlkh:'bizeps|unterarme',hammer:'bizeps|unterarme',isorow:'oberer|lat bizeps',cablerow:'oberer|lat bizeps',cablerowwide:'oberer|lat schultern bizeps',preacher:'bizeps|',
-  legpress:'quads|gesaess beinbeuger',abd:'abduktoren|gesaess',add:'adduktoren|',legext:'quads|',legcurl:'beinbeuger|waden',calfseat:'waden|',
+  legpress:'quads|gesaess beinbeuger',abd:'abduktoren|gesaess',add:'adduktoren|',legext:'quads|',legcurl:'beinbeuger|waden',calfseat:'waden|',crunchc:'bauch|',russian:'bauch|',cardio:'|quads waden',
   inclinepress:'brust|schultern trizeps',flyes:'brust|schultern',frontraise:'schultern|',ohpm:'schultern|trizeps',pushdown:'trizeps|',chestpress:'brust|trizeps schultern',lateralraise:'schultern|'};
 function musOf(ex){if(ex&&ex.mus)return ex.mus;const d=MUS_DEF[ex?.id];if(!d)return {p:[],s:[]};const [p,s]=d.split('|');return {p:p.split(' ').filter(Boolean),s:(s||'').split(' ').filter(Boolean)};}
 const musNames=ex=>musOf(ex).p.map(m=>MUS_NAME[m]).join(', ');
@@ -1270,11 +1276,11 @@ function stepperHTML(eid,j,f,v,label){
 function renderSet(e,ex,s,j){
   const unit=metricUnit(ex);
   if(s.done) return `<button class="set done" data-a="uncheck" data-e="${e.id}" data-s="${j}"><span class="ck">${icon('check',14,3)}</span><span class="sn">${j+1}</span>
-    <span class="sv">${esc(wLabel(num(s.w),ex))} × ${fmt(num(s.r),1)} <small class="muted" style="font-size:13px;font-weight:500">${unit}</small></span>${s.rpe?`<span class="rpe-chip">RPE ${s.rpe}</span>`:''}<span class="undo">ändern</span></button>`;
+    <span class="sv">${ex.metric==='min'?'':esc(wLabel(num(s.w),ex))+' × '}${fmt(num(s.r),1)} <small class="muted" style="font-size:13px;font-weight:500">${unit}</small></span>${s.rpe?`<span class="rpe-chip">RPE ${s.rpe}</span>`:''}<span class="undo">ändern</span></button>`;
   return `<div class="set"><div class="set-top"><span class="set-no">Satz ${j+1}</span>
       <button class="rpe-btn ${s.rpe?'on':''}" data-a="rpe" data-e="${e.id}" data-s="${j}">RPE ${s.rpe||'–'}</button>
       <button class="check" data-a="check" data-e="${e.id}" data-s="${j}" aria-label="Satz ${j+1} abhaken">${icon('check',24,3)}</button></div>
-    <div class="steppers">${stepperHTML(e.id,j,'w',s.w,ex.load==='bw'?'kg extra':'kg')}${stepperHTML(e.id,j,'r',s.r,unit)}</div></div>`;
+    <div class="steppers ${ex.metric==='min'?'one':''}">${ex.metric==='min'?'':stepperHTML(e.id,j,'w',s.w,ex.load==='bw'?'kg extra':'kg')}${stepperHTML(e.id,j,'r',s.r,unit)}</div></div>`;
 }
 function renderCardio(a){
   const c=a.cardio, run=a.kind==='run';
@@ -1335,7 +1341,7 @@ function openPicker(title,cb){
     <div class="plist" id="plist">${[...S.exercises].sort((a,b)=>a.name.localeCompare(b.name,'de')).map(x=>`<button class="prow" data-a="pick" data-id="${x.id}" data-name="${esc(x.name.toLowerCase())}"><span class="pn">${esc(x.name)}<small>${musNames(x)}</small></span><span class="muted sm">${metricUnit(x)}</span></button>`).join('')}</div>
     <div class="card"><h3 style="margin-bottom:10px">Neue Übung</h3>
       <input class="inp" id="nx-name" placeholder="Name, z. B. Dips" style="margin-bottom:8px">
-      <div class="grid2" style="margin-bottom:8px"><select class="inp" id="nx-metric"><option value="reps">Wiederholungen</option><option value="s">Sekunden</option><option value="m">Meter</option></select>
+      <div class="grid2" style="margin-bottom:8px"><select class="inp" id="nx-metric"><option value="reps">Wiederholungen</option><option value="s">Sekunden</option><option value="m">Meter</option><option value="min">Minuten</option></select>
       <select class="inp" id="nx-load"><option value="weight">Gewicht</option><option value="bw">Körpergewicht</option></select></div>
       <button class="btn block" data-a="pick-new">${icon('plus')} Anlegen &amp; wählen</button></div>
     <button class="btn ghost block" data-a="close">Abbrechen</button>`);
@@ -1549,7 +1555,7 @@ function openExEditor(id){
   const o=(v,l,cur)=>`<option value="${v}" ${cur===v?'selected':''}>${l}</option>`;
   openSheet(`<h2 style="margin-top:0">${x._new?'Neue Übung':'Übung bearbeiten'}</h2>
     <label class="fld"><span>Name</span><input class="inp" id="xd-name" value="${esc(x.name)}" placeholder="z. B. Dips"></label>
-    <div class="grid2"><label class="fld"><span>Messgröße</span><select class="inp" id="xd-metric">${o('reps','Wiederholungen',x.metric)}${o('s','Sekunden',x.metric)}${o('m','Meter',x.metric)}</select></label>
+    <div class="grid2"><label class="fld"><span>Messgröße</span><select class="inp" id="xd-metric">${o('reps','Wiederholungen',x.metric)}${o('s','Sekunden',x.metric)}${o('m','Meter',x.metric)}${o('min','Minuten',x.metric)}</select></label>
     <label class="fld"><span>Last</span><select class="inp" id="xd-load">${o('weight','Gewicht',x.load)}${o('bw','Körpergewicht',x.load)}</select></label></div>
     <label class="fld"><span>Gewichts-Schritt für +/− (kg)</span><input class="inp" id="xd-step" inputmode="decimal" value="${fmtInput(x.step||2.5)}"></label>
     ${(()=>{const m=musOf(x);return `<div class="fld"><span>Hauptmuskeln</span><div class="chips mus-chips">${MUSCLES.map(([k,l])=>`<button class="${m.p.includes(k)?'on':''}" data-a="mus-tog" data-k="p" data-m="${k}">${l}</button>`).join('')}</div></div>
@@ -1650,7 +1656,7 @@ const A={
     if(t.kind!=='strength') t.items=[];
     const i=S.templates.findIndex(x=>x.id===t.id);if(i>=0)S.templates[i]=t;else S.templates.push(t);save(true);closeSheet();render();toast('Vorlage gespeichert.','go');},
   'tpl-del':async()=>{if(!await confirmDlg(`Vorlage „${draft.name}“ löschen? Vergangene Trainings bleiben erhalten.`,'Löschen',true))return;S.templates=S.templates.filter(t=>t.id!==draft.id);save(true);closeSheet();render();},
-  'tpl-reset':async()=>{if(!await confirmDlg('Standard-Plan (Push/Pull/Beine an 6 Tagen, dazu Boxen & Laufen flexibel) wiederherstellen? Eigene Änderungen an diesen Vorlagen gehen verloren.','Wiederherstellen',true))return;
+  'tpl-reset':async()=>{if(!await confirmDlg('Standard-Plan (Pull · Push · Beine · Pull · Push · Core+Cardio, dazu Boxen & Laufen flexibel) wiederherstellen? Eigene Änderungen an diesen Vorlagen gehen verloren.','Wiederherstellen',true))return;
     const def=defaultTemplates();for(const t of def){const i=S.templates.findIndex(x=>x.id===t.id);if(i>=0)S.templates[i]=t;else S.templates.push(t);}
     for(const x of defaultExercises()) if(!S.exercises.find(e=>e.id===x.id)) S.exercises.push(x);save(true);render();},
   'ex-edit':el=>openExEditor(el.dataset.id), 'ex-new':()=>openExEditor(null),
