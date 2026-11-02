@@ -423,6 +423,7 @@ img, svg { -webkit-user-drag: none; }
 .mus-chips{flex-wrap:wrap;overflow:visible}.mus-chips button{height:34px;padding:0 12px;font-size:13px}
 .prow .pn{display:flex;flex-direction:column;min-width:0}.prow .pn small{font-size:12px;color:var(--muted)}
 .steppers.one{grid-template-columns:1fr}
+.rest-day h2{font-size:26px;margin:6px 0 0;text-transform:none;letter-spacing:-.03em;color:var(--text);display:block}
 </style>
 </head>
 <body>
@@ -531,16 +532,22 @@ function defaultTemplates(){
     {id:'tPullA',name:'Pull A · Rücken & Bizeps',day:1,kind:'strength',items:[I('latpull',3,8,12,120),I('curlkh',4,8,12,90),I('hammer',3,10,12,75),I('isorow',3,8,12,120),I('cablerow',3,10,12,90)]},
     {id:'tPushA',name:'Push A · Brust & Schultern',day:2,kind:'strength',items:[I('inclinepress',3,8,12,120),I('flyes',3,10,15,90),I('frontraise',3,10,15,75),I('ohpm',3,8,12,120),I('pushdown',4,10,15,75)]},
     {id:'tLegA',name:'Beine',day:3,kind:'strength',items:[I('legpress',3,8,12,150),I('abd',3,12,15,75),I('add',3,12,15,75),I('legext',3,10,15,90),I('legcurl',3,10,15,90),I('calfseat',3,12,15,60)]},
-    {id:'tPullB',name:'Pull B · Rücken & Bizeps',day:4,kind:'strength',items:[I('latpull',3,8,12,120),I('preacher',3,10,12,90),I('isorow',3,8,12,120),I('hammer',4,10,12,75),I('cablerowwide',3,10,12,90)]},
-    {id:'tPushB',name:'Push B · Brust & Schultern',day:5,kind:'strength',items:[I('inclinepress',3,8,12,120),I('chestpress',3,8,12,120),I('frontraise',3,10,15,75),I('lateralraise',3,12,15,75),I('pushdown',4,10,15,75)]},
-    {id:'tCore',name:'Core + Cardio',day:6,kind:'strength',items:[I('crunchc',3,12,15,60),I('kneeraise',3,10,15,60),I('russian',3,16,24,60),I('plank',3,30,60,60),I('cardio',1,20,30,0)]},
+    {id:'tPullB',name:'Pull B · Rücken & Bizeps',day:5,kind:'strength',items:[I('latpull',3,8,12,120),I('preacher',3,10,12,90),I('isorow',3,8,12,120),I('hammer',4,10,12,75),I('cablerowwide',3,10,12,90)]},
+    {id:'tPushB',name:'Push B · Brust & Schultern',day:6,kind:'strength',items:[I('inclinepress',3,8,12,120),I('chestpress',3,8,12,120),I('frontraise',3,10,15,75),I('lateralraise',3,12,15,75),I('pushdown',4,10,15,75)]},
+    {id:'tCore',name:'Core + Cardio',day:0,kind:'strength',items:[I('crunchc',3,12,15,60),I('kneeraise',3,10,15,60),I('russian',3,16,24,60),I('plank',3,30,60,60),I('cardio',1,20,30,0)]},
     {id:'tRun',name:'Laufen',day:null,kind:'run',items:[]},
   ];
+}
+function oneUnitPerDay(list,keepId){
+  const seen=new Set(), moved=[];
+  const rk=t=>t.id===keepId?0:['tPullA','tPushA','tLegA','tPullB','tPushB','tCore'].includes(t.id)?1:2;
+  for(const t of [...list].sort((a,b)=>rk(a)-rk(b))){if(t.day==null)continue;if(seen.has(t.day)){t.day=null;moved.push(t);}else seen.add(t.day);}
+  return moved;
 }
 function defaultState(){
   return {version:VERSION,created:Date.now(),
     profile:{name:'',startWeight:100,goalWeight:85,campaignStart:dayKey(mondayOf(new Date())),restSec:120,autoTimer:true,bigStep5:false,vibrate:true,sound:true,wakeLock:true,weeklyTarget:6,sex:'m',birthYear:'',height:''},
-    exercises:defaultExercises(),templates:defaultTemplates(),sessions:[],bodyweight:[],active:null,planV:4};
+    exercises:defaultExercises(),templates:defaultTemplates(),sessions:[],bodyweight:[],active:null,planV:5};
 }
 function migrate(d){
   const def=defaultState();
@@ -561,6 +568,10 @@ function migrate(d){
     for(const t of defaultTemplates()){const x=o.templates.find(y=>y.id===t.id);if(!x)o.templates.push(t);else{x.day=t.day;if(t.id==='tLegA'&&x.name==='Beine A')x.name='Beine';}}
     o.profile.weeklyTarget=6; o.planV=3;}
   if(!(d.planV>=4)){o.templates=o.templates.filter(t=>t.id!=='tBox'&&t.kind!=='boxing');o.planV=4;} // Boxen raus; alte Box-Trainings bleiben im Tagebuch
+  if(!(d.planV>=5)){ // Donnerstag Ruhetag, Core+Cardio auf Sonntag
+    const D={tPullA:1,tPushA:2,tLegA:3,tPullB:5,tPushB:6,tCore:0};for(const t of o.templates) if(t.id in D) t.day=D[t.id];
+    o.planV=5;}
+  oneUnitPerDay(o.templates);
   delete o.app; delete o.exportedAt; o.version=VERSION;
   return o;
 }
@@ -1075,6 +1086,7 @@ function lastOf(tplId){return [...S.sessions].filter(s=>s.templateId===tplId).so
 function viewTrain(){
   const c=campaign(), st=streakInfo(), today=new Date().getDay();
   const order=t=>t.day==null?99:(t.day-today+7)%7, tpls=[...S.templates].sort((a,b)=>order(a)-order(b));
+  const restToday=!S.templates.some(t=>t.day===today);
   const next=tpls[0], isToday=next&&next.day===today, doneToday=S.sessions.some(s=>dayKey(new Date(s.start))===dayKey());
   const first=(S.profile.name||'').trim().split(/\s+/)[0];
   let h=`<div class="top"><span class="brand"><i></i>VIGIL</span>${st.streak?`<span class="streak">${icon('flame',16)}<b>${st.streak}</b> ${st.streak===1?'Woche':'Wochen'}</span>`:''}</div>
@@ -1082,6 +1094,7 @@ function viewTrain(){
   h+=formCard();
   if(next){
     const light=c.light&&next.kind==='strength';
+    if(restToday) h+=`<section class="card rest-day"><span class="kicker">Heute</span><h2>Ruhetag</h2><p class="muted sm" style="margin:2px 0 0">Erholung gehört zum Plan – Muskeln wachsen in der Pause. Morgen: ${esc(next.name)}.</p></section>`;
     h+=`<section class="card today ${next.kind==='strength'&&next.items.length?'has-map':''}">${next.kind==='strength'&&next.items.length?`<button class="today-map" data-a="mus-tpl" data-id="${next.id}" aria-label="Muskeln anzeigen">${bodyMap(tplLoad(next),118)}</button>`:''}<div class="between"><span class="kicker">${isToday?(doneToday?'Heute · erledigt':'Heute'):'Als Nächstes · '+DAYS[next.day]}</span>${light?`<span class="pill warn">Leichte Woche</span>`:''}</div>
       <h2>${esc(next.name)}</h2><p>${esc(tplDesc(next))}</p>
       ${next.kind==='strength'?`<div class="today-meta"><span>${icon('dumbbell',16)}${next.items.length} Übungen</span><span>${icon('hold',16)}${tplSets(next)-(light?next.items.length:0)} Sätze</span><span>${icon('timer',16)}~${tplMin(next)} min</span></div>`:`<div class="today-meta"><span>${icon(next.kind==='run'?'run':'target',16)}${next.kind==='run'?'Dauer · Distanz · Tempo':'Dauer · Anstrengung'}</span></div>`}
@@ -1654,9 +1667,11 @@ const A={
   'tpl-save':()=>{if(!draft.name.trim()){toast('Bitte einen Namen eingeben.','err');return;}
     const t=deep(draft);delete t._new;t.name=t.name.trim();t.items=t.items.filter(i=>i.exId).map(i=>({...i,sets:Math.max(1,Math.round(num(i.sets))||1)}));
     if(t.kind!=='strength') t.items=[];
-    const i=S.templates.findIndex(x=>x.id===t.id);if(i>=0)S.templates[i]=t;else S.templates.push(t);save(true);closeSheet();render();toast('Vorlage gespeichert.','go');},
+    const i=S.templates.findIndex(x=>x.id===t.id);if(i>=0)S.templates[i]=t;else S.templates.push(t);
+    const moved=oneUnitPerDay(S.templates,t.id);save(true);closeSheet();render();
+    toast(moved.length?`Gespeichert. „${moved.map(x=>x.name).join('“, „')}“ ist jetzt flexibel – nur eine Einheit pro Tag.`:'Vorlage gespeichert.','go',moved.length?4200:2600);},
   'tpl-del':async()=>{if(!await confirmDlg(`Vorlage „${draft.name}“ löschen? Vergangene Trainings bleiben erhalten.`,'Löschen',true))return;S.templates=S.templates.filter(t=>t.id!==draft.id);save(true);closeSheet();render();},
-  'tpl-reset':async()=>{if(!await confirmDlg('Standard-Plan (Pull · Push · Beine · Pull · Push · Core+Cardio, dazu Laufen flexibel) wiederherstellen? Eigene Änderungen an diesen Vorlagen gehen verloren.','Wiederherstellen',true))return;
+  'tpl-reset':async()=>{if(!await confirmDlg('Standard-Plan (Mo Pull · Di Push · Mi Beine · Do Ruhe · Fr Pull · Sa Push · So Core+Cardio, dazu Laufen flexibel) wiederherstellen? Eigene Änderungen an diesen Vorlagen gehen verloren.','Wiederherstellen',true))return;
     const def=defaultTemplates();for(const t of def){const i=S.templates.findIndex(x=>x.id===t.id);if(i>=0)S.templates[i]=t;else S.templates.push(t);}
     for(const x of defaultExercises()) if(!S.exercises.find(e=>e.id===x.id)) S.exercises.push(x);save(true);render();},
   'ex-edit':el=>openExEditor(el.dataset.id), 'ex-new':()=>openExEditor(null),
