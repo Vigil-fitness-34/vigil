@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="VIGIL">
-<meta name="description" content="VIGIL – Trainingslog für Kraft, Laufen und Boxen. Progression, Rekorde und Statistiken. Offline.">
+<meta name="description" content="VIGIL – Trainingslog für Kraft und Cardio. Progression, Rekorde und Statistiken. Offline.">
 <title>VIGIL · Training</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -534,14 +534,13 @@ function defaultTemplates(){
     {id:'tPullB',name:'Pull B · Rücken & Bizeps',day:4,kind:'strength',items:[I('latpull',3,8,12,120),I('preacher',3,10,12,90),I('isorow',3,8,12,120),I('hammer',4,10,12,75),I('cablerowwide',3,10,12,90)]},
     {id:'tPushB',name:'Push B · Brust & Schultern',day:5,kind:'strength',items:[I('inclinepress',3,8,12,120),I('chestpress',3,8,12,120),I('frontraise',3,10,15,75),I('lateralraise',3,12,15,75),I('pushdown',4,10,15,75)]},
     {id:'tCore',name:'Core + Cardio',day:6,kind:'strength',items:[I('crunchc',3,12,15,60),I('kneeraise',3,10,15,60),I('russian',3,16,24,60),I('plank',3,30,60,60),I('cardio',1,20,30,0)]},
-    {id:'tBox',name:'Boxen',day:null,kind:'boxing',items:[]},
     {id:'tRun',name:'Laufen',day:null,kind:'run',items:[]},
   ];
 }
 function defaultState(){
   return {version:VERSION,created:Date.now(),
     profile:{name:'',startWeight:100,goalWeight:85,campaignStart:dayKey(mondayOf(new Date())),restSec:120,autoTimer:true,bigStep5:false,vibrate:true,sound:true,wakeLock:true,weeklyTarget:6,sex:'m',birthYear:'',height:''},
-    exercises:defaultExercises(),templates:defaultTemplates(),sessions:[],bodyweight:[],active:null,planV:3};
+    exercises:defaultExercises(),templates:defaultTemplates(),sessions:[],bodyweight:[],active:null,planV:4};
 }
 function migrate(d){
   const def=defaultState();
@@ -561,6 +560,7 @@ function migrate(d){
     o.templates=o.templates.filter(t=>t.id!=='tLegB');
     for(const t of defaultTemplates()){const x=o.templates.find(y=>y.id===t.id);if(!x)o.templates.push(t);else{x.day=t.day;if(t.id==='tLegA'&&x.name==='Beine A')x.name='Beine';}}
     o.profile.weeklyTarget=6; o.planV=3;}
+  if(!(d.planV>=4)){o.templates=o.templates.filter(t=>t.id!=='tBox'&&t.kind!=='boxing');o.planV=4;} // Boxen raus; alte Box-Trainings bleiben im Tagebuch
   delete o.app; delete o.exportedAt; o.version=VERSION;
   return o;
 }
@@ -1223,7 +1223,7 @@ function diaryEntry(s,d){
 function viewDiary(){
   const f=ui.logF||'all', all=[...S.sessions].filter(s=>f==='all'||s.kind===f).sort((a,b)=>b.start-a.start), d=derivedPR(), n=ui.logN||30;
   let h=`<header class="ph"><div class="kicker">${S.sessions.length} ${S.sessions.length===1?'Eintrag':'Einträge'}</div><h1>Tagebuch</h1></header>
-    <div class="chips">${[['all','Alle'],['strength','Kraft'],['run','Laufen'],['boxing','Boxen']].map(([k,l])=>`<button class="${f===k?'on':''}" data-a="logf" data-v="${k}">${l}</button>`).join('')}</div>`;
+    <div class="chips">${[['all','Alle'],['strength','Kraft'],['run','Laufen'],...(S.sessions.some(s=>s.kind==='boxing')?[['boxing','Boxen']]:[])].map(([k,l])=>`<button class="${f===k?'on':''}" data-a="logf" data-v="${k}">${l}</button>`).join('')}</div>`;
   if(!all.length) return h+`<div class="card empty">${icon('note',30)}Noch keine Einträge. Nach jedem Training kannst du hier festhalten, wie es lief.</div>`;
   let month='';
   for(const s of all.slice(0,n)){const m=new Date(s.start).toLocaleDateString('de-DE',{month:'long',year:'numeric'});
@@ -1414,7 +1414,7 @@ function statsWeek(){
     <div class="verdict ${cmpCls(v)}">${word}</div><p class="muted" style="margin:4px 0 0">als die Vorwoche bis ${DAYS[new Date().getDay()]}${a.vol||b.vol?' (nach Volumen)':''}. Ganze Vorwoche: ${full.count} Einheiten · ${fmtT(full.vol)}</p>
     <div class="weekpips">${['MO','DI','MI','DO','FR','SA','SO'].map((d,i)=>`<div class="${a.days.has(i)?'on':''}">${d}<span></span></div>`).join('')}</div></section>
     <div class="tiles">${tile('Einheiten',a.count,a.count,b.count,x=>x)}${tile('Volumen',fmtT(a.vol),a.vol,b.vol,fmtT)}${tile('Sätze',a.sets,a.sets,b.sets,x=>x)}${tile('Rekorde',a.prs,a.prs,b.prs,x=>x)}
-    ${tile('Laufen',fmt(a.runKm,1)+'<small>km</small>',a.runKm,b.runKm,x=>fmt(x,1)+' km')}${tile('Boxen',fmt(a.boxMin,0)+'<small>min</small>',a.boxMin,b.boxMin,x=>fmt(x,0)+' min')}</div>`;
+    ${tile('Laufen',fmt(a.runKm,1)+'<small>km</small>',a.runKm,b.runKm,x=>fmt(x,1)+' km')}${a.boxMin||b.boxMin?tile('Boxen',fmt(a.boxMin,0)+'<small>min</small>',a.boxMin,b.boxMin,x=>fmt(x,0)+' min'):''}</div>`;
   const pts=[],cnt=[];
   for(let i=7;i>=0;i--){const m=addDays(mon,-7*i),w=weekStats(m);pts.push({x:m.getTime(),y:w.vol});cnt.push({x:m.getTime(),y:w.count});}
   h+=`<h2>Volumen · 8 Wochen</h2><div class="card">${chartSlot({bars:{points:pts,color:C.b},yFmt:v=>v>=1000?fmt(v/1000,1)+'t':fmt(v,0),height:190})}</div>`;
@@ -1537,7 +1537,7 @@ function tplHTML(){
   let h=`<h2 style="margin-top:0">${d._new?'Neue Vorlage':'Vorlage bearbeiten'}</h2>
     <label class="fld"><span>Name</span><input class="inp" data-d="name" value="${esc(d.name)}"></label>
     <div class="grid2"><label class="fld"><span>Tag</span><select class="inp" data-d="day">${[1,2,3,4,5,6,0].map(i=>`<option value="${i}" ${d.day===i?'selected':''}>${DAYS[i]}</option>`).join('')}<option value="" ${d.day==null?'selected':''}>Flexibel (kein fester Tag)</option></select></label>
-    <label class="fld"><span>Art</span><select class="inp" data-d="kind"><option value="strength" ${d.kind==='strength'?'selected':''}>Kraft</option><option value="boxing" ${d.kind==='boxing'?'selected':''}>Boxen</option><option value="run" ${d.kind==='run'?'selected':''}>Laufen</option></select></label></div>`;
+    <label class="fld"><span>Art</span><select class="inp" data-d="kind"><option value="strength" ${d.kind==='strength'?'selected':''}>Kraft</option>${d.kind==='boxing'?'<option value="boxing" selected>Boxen</option>':''}<option value="run" ${d.kind==='run'?'selected':''}>Laufen</option></select></label></div>`;
   if(d.kind==='strength'){
     h+=`<p class="muted sm">Wdh. leer lassen = „max“. Bei Meter/Sekunden gelten die Felder als m/Sek.</p>`;
     d.items.forEach((it,i)=>{h+=`<div class="ti"><div class="ti-top"><select class="inp" data-di="${i}" data-df="exId">${exOpts(it.exId)}</select>
@@ -1656,7 +1656,7 @@ const A={
     if(t.kind!=='strength') t.items=[];
     const i=S.templates.findIndex(x=>x.id===t.id);if(i>=0)S.templates[i]=t;else S.templates.push(t);save(true);closeSheet();render();toast('Vorlage gespeichert.','go');},
   'tpl-del':async()=>{if(!await confirmDlg(`Vorlage „${draft.name}“ löschen? Vergangene Trainings bleiben erhalten.`,'Löschen',true))return;S.templates=S.templates.filter(t=>t.id!==draft.id);save(true);closeSheet();render();},
-  'tpl-reset':async()=>{if(!await confirmDlg('Standard-Plan (Pull · Push · Beine · Pull · Push · Core+Cardio, dazu Boxen & Laufen flexibel) wiederherstellen? Eigene Änderungen an diesen Vorlagen gehen verloren.','Wiederherstellen',true))return;
+  'tpl-reset':async()=>{if(!await confirmDlg('Standard-Plan (Pull · Push · Beine · Pull · Push · Core+Cardio, dazu Laufen flexibel) wiederherstellen? Eigene Änderungen an diesen Vorlagen gehen verloren.','Wiederherstellen',true))return;
     const def=defaultTemplates();for(const t of def){const i=S.templates.findIndex(x=>x.id===t.id);if(i>=0)S.templates[i]=t;else S.templates.push(t);}
     for(const x of defaultExercises()) if(!S.exercises.find(e=>e.id===x.id)) S.exercises.push(x);save(true);render();},
   'ex-edit':el=>openExEditor(el.dataset.id), 'ex-new':()=>openExEditor(null),
